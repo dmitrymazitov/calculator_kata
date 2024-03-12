@@ -10,39 +10,40 @@ import (
 	"strings"
 )
 
-func addition(a, b int) int {
-	return a + b
-}
-
-func subtraction(a, b int) int {
-	return a - b
-}
-
-func multiplication(a, b int) int {
-	return a * b
-}
-
-func division(a, b int) int {
-	return a / b
+func sum(a, b int, op string) int {
+	// Функция операций сложения, вычитания, умножения и деления
+	if op == "+" {
+		return a + b
+	} else if op == "-" {
+		return a - b
+	} else if op == "*" {
+		return a * b
+	} else if op == "/" {
+		if b == 0 {
+			panic("На ноль делить нельзя")
+		} else {
+			return a / b
+		}
+	} else {
+		return 0
+	}
 }
 
 func go_to_roman(n int) string {
+	// Функция конвертации арабских чисел в римские
+
 	res := ""
 
 	elements := map[int]string{
-		1000: "М",
-		900:  "CM",
-		500:  "D",
-		400:  "CD",
-		100:  "C",
-		90:   "XC",
-		50:   "L",
-		40:   "XL",
-		10:   "X",
-		9:    "IX",
-		5:    "V",
-		4:    "IV",
-		1:    "I",
+		100: "C",
+		90:  "XC",
+		50:  "L",
+		40:  "XL",
+		10:  "X",
+		9:   "IX",
+		5:   "V",
+		4:   "IV",
+		1:   "I",
 	}
 
 	keys := make([]int, len(elements))
@@ -53,25 +54,23 @@ func go_to_roman(n int) string {
 		keys[i] = k
 		i++
 	}
-	sort.Ints((keys))
+
+	sort.Ints(keys)
 	slices.Reverse(keys)
 
-	for _, k := range keys {
-		if n/k == 1 {
-			res += elements[k]
-		}
-		n %= k
+	for _, p := range keys {
+		y := n / p
+		res += strings.Repeat(elements[p], y)
+		n %= p
+
 	}
 	return res
 }
 
 func go_to_arabic(n string) int {
+	// Функция конвертации римских чисел в арабские
 
 	elements := map[string]int{
-		"М":  1000,
-		"CM": 900,
-		"D":  500,
-		"CD": 400,
 		"C":  100,
 		"XC": 90,
 		"L":  50,
@@ -126,51 +125,42 @@ func go_to_arabic(n string) int {
 	return res
 }
 
-func check_digits(a string) int {
+func check_type(i string) (string, int) {
+	// Проверка аргументов на заданные числа. Числа должны быть арабскими (от 1 до 10) или римскими (от I до X)
 
-	//arab_list := []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
-	//rome_list := []string{"X", "IX", "VIII", "VII", "VI", "V", "IV", "III", "II", "I"}
+	ar_list := []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
+	rm_list := []string{"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"}
 
-	if len(a) > 0 && len(a) <= 2 && a != " " {
-		value_dgt, _ := strconv.Atoi(a)
-		return value_dgt
+	if slices.Contains(ar_list, i) {
+		return i, 0
+	} else if slices.Contains(rm_list, i) {
+		return i, 1
 	} else {
-		panic("Значение должно быть от 1 до 10")
+		panic("Неверное значение")
 	}
-
 }
 
-//first_value_dgt, err := strconv.Atoi(first_value_str)
-//if err != nil {
-//	panic(err)
-//}
-//
-//second_value_str := strp_st[2]
-//second_value_dgt, err := strconv.Atoi(second_value_str)
-//if err != nil {
-//	panic(err)
-//}
-//operand := strp_st[1]
-//
-//if operand == "+" {
-//	fmt.Println(addition(first_value_dgt, second_value_dgt))
-//}
-//if operand == "-" {
-//	fmt.Println(subtraction(first_value_dgt, second_value_dgt))
-//}
-//if operand == "*" {
-//	fmt.Println(multiplication(first_value_dgt, second_value_dgt))
-//}
-//if operand == "/" {
-//	fmt.Println(division(first_value_dgt, second_value_dgt))
-//}
+func oper_check(op string) string {
+	// Функция проверки операнда
+
+	if op == "+" {
+		return op
+	} else if op == "-" {
+		return op
+	} else if op == "*" {
+		return op
+	} else if op == "/" {
+		return op
+	} else {
+		panic("Неверный операнд")
+	}
+}
 
 func main() {
-
+	//Вводе данных в консоли
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter text: ")
 	text, _ := reader.ReadString('\n')
-	text = strings.TrimSpace(text)
 
 	strp_st := strings.Fields(text)
 
@@ -180,30 +170,40 @@ func main() {
 
 		first_value_str := strp_st[0]
 		second_value_str := strp_st[2]
-
-		a_d := check_digits(first_value_str)
-		b_d := check_digits(second_value_str)
-
 		operand := strp_st[1]
 
-		if operand == "+" {
-			fmt.Println(addition(a_d, b_d))
-		}
-		if operand == "-" {
-			fmt.Println(subtraction(a_d, b_d))
-		}
-		if operand == "*" {
-			fmt.Println(multiplication(a_d, b_d))
-		}
-		if operand == "/" {
-			fmt.Println(division(a_d, b_d))
+		a_d, ir := check_type(first_value_str)
+		b_d, ir2 := check_type(second_value_str)
+
+		o_c := oper_check(operand)
+
+		if ir == 0 && ir2 == 0 {
+			to_digit, err := strconv.Atoi(a_d)
+			if err != nil {
+				panic(err)
+			}
+			to_digit2, err := strconv.Atoi(b_d)
+			if err != nil {
+				panic(err)
+			}
+
+			itog := sum(to_digit, to_digit2, o_c)
+			fmt.Println(itog)
+
+		} else if ir == 1 && ir2 == 1 {
+			s1 := go_to_arabic(a_d)
+			s2 := go_to_arabic(b_d)
+			itog_ar := sum(s1, s2, o_c)
+			if itog_ar < 0 {
+				panic("Ошибка: Итог уравнения римских цифр является отрциательное число")
+			} else {
+				itog := go_to_roman(itog_ar)
+				fmt.Println(itog)
+			}
+		} else {
+			panic("Неверное значение")
 		}
 
 	}
 
-	s := "XCVI"
-	n := 96
-
-	fmt.Println(go_to_arabic(s))
-	fmt.Println(go_to_roman(n))
 }
